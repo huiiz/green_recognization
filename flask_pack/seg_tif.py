@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
 from osgeo import gdal
-
+from common import clear_fold
 seg_count = 0
 seg_total = 0
+x_count = 0
+y_count = 0
 
 class GRID:
     # 读图像文件
@@ -58,15 +60,16 @@ class GRID:
 
 def seg(path):
     proj, geotrans, data = GRID().read_img(f'{path}/tif_file/to_predict.tif')  # 读数据
-    # print(proj)
-    # print(geotrans)
-    # print(data)
-    # print(data.shape)
-    # channel=3
     width, height = data.shape
-    global seg_count, seg_total
+    global seg_count, seg_total, x_count, y_count
     seg_count = 0
-    seg_total = (width // 256) * (height // 256)
+    x_count = width // 256
+    y_count = height // 256
+    seg_total = x_count * y_count
+    if os.listdir(f'{path}/tif_temp/'):
+        clear_fold(path, 'tif_temp')
+        clear_fold(path, 'png_temp')
+        clear_fold(path, 'result_temp')
     for i in range(width // 256):  # 切割成256*256小图
         for j in range(height // 256):
             seg_count += 1
@@ -74,4 +77,7 @@ def seg(path):
             GRID().write_img(f'{path}/tif_temp/{i}_{j}.tif', proj, geotrans, cur_image)  ##写数据
 
 def get_seg_count():
-    return seg_total, seg_count
+    return seg_count
+
+def get_seg_total():
+    return x_count, y_count, seg_total

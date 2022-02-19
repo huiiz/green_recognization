@@ -1,15 +1,11 @@
 <template>
-  <div id="predict">
-      <Menu/>
-    预测
-
-  </div>
+  <ToPredict :from="2" />
 </template>
 <script>
-import Menu from '@/components/Menu.vue';
+import ToPredict from '../components/ToPredict.vue';
 export default {
   components: {
-    Menu
-  }
+    ToPredict,
+  },
 };
 </script>

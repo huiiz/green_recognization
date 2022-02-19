@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
-from nets import vgg
-#from nets.vgg import VGG16
+from unet.nets import vgg
 
 
 class unetUp(nn.Module):

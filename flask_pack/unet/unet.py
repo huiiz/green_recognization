@@ -1,6 +1,6 @@
 import colorsys
-import copy
-import time
+from copy import deepcopy
+# import time
 
 import numpy as np
 import torch
@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from PIL import Image
 from torch import nn
 
-from nets.unet import Unet as unet
+from unet.nets.unet import Unet as unet
 
 
 #--------------------------------------------#
@@ -18,10 +18,14 @@ from nets.unet import Unet as unet
 #   一定要注意训练时的model_path和num_classes数的修改
 #--------------------------------------------#
 class Unet(object):
-    _defaults = {
-        "model_path"        : 'model_data/unet_voc.pth',
+    #---------------------------------------------------#
+    #   初始化UNET
+    #---------------------------------------------------#
+    def __init__(self, path, num):
+        self._defaults = {
+        "model_path"        : f'{path}/model_data/unet_voc_{num}.pth',
         "model_image_size"  : (512, 512, 3),
-        "num_classes"       : 21,
+        "num_classes"       : 2,
         "cuda"              : False,
         #--------------------------------#
         #   blend参数用于控制是否
@@ -29,11 +33,6 @@ class Unet(object):
         #--------------------------------#
         "blend"             : True
     }
-
-    #---------------------------------------------------#
-    #   初始化UNET
-    #---------------------------------------------------#
-    def __init__(self, **kwargs):
         self.__dict__.update(self._defaults)
         self.generate()
 
@@ -89,7 +88,7 @@ class Unet(object):
         #---------------------------------------------------#
         #   对输入图像进行一个备份，后面用于绘图
         #---------------------------------------------------#
-        old_img = copy.deepcopy(image)
+        old_img = deepcopy(image)
         orininal_h = np.array(image).shape[0]
         orininal_w = np.array(image).shape[1]
 
@@ -139,29 +138,29 @@ class Unet(object):
         
         return image
 
-    def get_FPS(self, image, test_interval):
-        orininal_h = np.array(image).shape[0]
-        orininal_w = np.array(image).shape[1]
+    # def get_FPS(self, image, test_interval):
+    #     orininal_h = np.array(image).shape[0]
+    #     orininal_w = np.array(image).shape[1]
 
-        image, nw, nh = self.letterbox_image(image,(self.model_image_size[1],self.model_image_size[0]))
-        images = [np.array(image)/255]
-        images = np.transpose(images,(0,3,1,2))
+    #     image, nw, nh = self.letterbox_image(image,(self.model_image_size[1],self.model_image_size[0]))
+    #     images = [np.array(image)/255]
+    #     images = np.transpose(images,(0,3,1,2))
 
-        with torch.no_grad():
-            images = torch.from_numpy(images).type(torch.FloatTensor)
-            if self.cuda:
-                images =images.cuda()
-            pr = self.net(images)[0]
-            pr = F.softmax(pr.permute(1,2,0),dim = -1).cpu().numpy().argmax(axis=-1)
-            pr = pr[int((self.model_image_size[0]-nh)//2):int((self.model_image_size[0]-nh)//2+nh), int((self.model_image_size[1]-nw)//2):int((self.model_image_size[1]-nw)//2+nw)]
+    #     with torch.no_grad():
+    #         images = torch.from_numpy(images).type(torch.FloatTensor)
+    #         if self.cuda:
+    #             images =images.cuda()
+    #         pr = self.net(images)[0]
+    #         pr = F.softmax(pr.permute(1,2,0),dim = -1).cpu().numpy().argmax(axis=-1)
+    #         pr = pr[int((self.model_image_size[0]-nh)//2):int((self.model_image_size[0]-nh)//2+nh), int((self.model_image_size[1]-nw)//2):int((self.model_image_size[1]-nw)//2+nw)]
 
-        t1 = time.time()
-        for _ in range(test_interval):
-            with torch.no_grad():
-                pr = self.net(images)[0]
-                pr = F.softmax(pr.permute(1,2,0),dim = -1).cpu().numpy().argmax(axis=-1)
-                pr = pr[int((self.model_image_size[0]-nh)//2):int((self.model_image_size[0]-nh)//2+nh), int((self.model_image_size[1]-nw)//2):int((self.model_image_size[1]-nw)//2+nw)]
+    #     t1 = time.time()
+    #     for _ in range(test_interval):
+    #         with torch.no_grad():
+    #             pr = self.net(images)[0]
+    #             pr = F.softmax(pr.permute(1,2,0),dim = -1).cpu().numpy().argmax(axis=-1)
+    #             pr = pr[int((self.model_image_size[0]-nh)//2):int((self.model_image_size[0]-nh)//2+nh), int((self.model_image_size[1]-nw)//2):int((self.model_image_size[1]-nw)//2+nw)]
 
-        t2 = time.time()
-        tact_time = (t2 - t1) / test_interval
-        return tact_time
+    #     t2 = time.time()
+    #     tact_time = (t2 - t1) / test_interval
+    #     return tact_time

@@ -16,6 +16,8 @@ def change(path):
         driver.CreateCopy(os.path.join(save_path, image.split('.')[0] + ".png"), im)
 
 def seg_and_change(path):
+    global change_count
+    change_count = 0
     seg(path)
     change(path)
 

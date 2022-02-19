@@ -83,7 +83,7 @@ function startServer_EXE() {
         //     console.log(error);
         //   });
       }
-    }, 1000);
+    }, 5000);
 
   }
 }
@@ -99,10 +99,15 @@ function stopServer() {
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-  stopServer();
+  http.get("http://localhost:5001/exit",function(data){})
+  setTimeout(() => {
+    if (process.platform !== 'darwin') {
+      app.quit()
+    }
+    stopServer();
+  }, 2000);
+  
+
 })
 
 app.on('activate', () => {

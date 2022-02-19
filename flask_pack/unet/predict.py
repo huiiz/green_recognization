@@ -1,56 +1,42 @@
-#----------------------------------------------------#
-#   对视频中的predict.py进行了修改，
-#   将单张图片预测、摄像头检测和FPS测试功能
-#   整合到了一个py文件中，通过指定mode进行模式的修改。
-#----------------------------------------------------#
-import time
-import os
-import cv2
-import numpy as np
 from PIL import Image
+from time import sleep
+from unet.unet import Unet
+import os
+# result_count = 0
+total_count = 0
+result_ls = []
+stop = False
 
-from unet import Unet
+def u_predict(path, img_path, num):
+    unet = Unet(path, num)
+    try:
+        # img_list = [f'{path}/png_temp/{i}_{j}.png' for i in range(x) for j in range(y)]
+        img_list = [os.path.join(img_path, f) for f in os.listdir(img_path) if f.endswith('.jpg') or f.endswith('.png')]
 
-if __name__ == "__main__":
-    #-------------------------------------------------------------------------#
-    #   如果想要修改对应种类的颜色，到generate函数里修改self.colors即可
-    #-------------------------------------------------------------------------#
-    unet = Unet()
-    #-------------------------------------------------------------------------#
-    #   mode用于指定测试的模式：
-    #   'dir'表示批量预测
-    #-------------------------------------------------------------------------#
-    mode = "dir"
+        global result_ls, total_count, stop
+        total_count = len(img_list)
+        result_ls = []
+        stop = False
+        for img in img_list:
+            if stop:
+                break
+            image = Image.open(img)
+            r_image = unet.detect_image(image)
+            res_name = path+'/result_temp/'+img.split('\\')[-1]
+            result_ls.append(img.split('\\')[-1])
+            print(res_name)
+            # result_count += 1
+            r_image.save(res_name)
 
-    # save_path='D:'
+    except:
+        print('Open Error! Try again!')
 
-    '''
-        predict.py有几个注意点
-        1、该代码无法直接进行批量预测，如果想要批量预测，可以利用os.listdir()遍历文件夹，利用Image.open打开图片文件进行预测。
-        具体流程可以参考get_miou_prediction.py，在get_miou_prediction.py即实现了遍历。
-        2、如果想要保存，利用r_image.save("img.jpg")即可保存。
-        3、如果想要原图和分割图不混合，可以把blend参数设置成False。
-        4、如果想根据mask获取对应的区域，可以参考detect_image函数中，利用预测结果绘图的部分，判断每一个像素点的种类，然后根据种类获取对应的部分。
-        seg_img = np.zeros((np.shape(pr)[0],np.shape(pr)[1],3))
-        for c in range(self.num_classes):
-            seg_img[:, :, 0] += ((pr == c)*( self.colors[c][0] )).astype('uint8')
-            seg_img[:, :, 1] += ((pr == c)*( self.colors[c][1] )).astype('uint8')
-            seg_img[:, :, 2] += ((pr == c)*( self.colors[c][2] )).astype('uint8')
-    '''
-    if mode == 'dir':
-        while(True):
-            path = input('Input image file_path:')
-            if path == 'exit':
-                exit(1)  # 输入exit退出
-            else:
-                try:
-                    img_list = [os.path.join(path, f) for f in os.listdir(
-                        path) if f.endswith('.jpg') or f.endswith('.png')]
-                    for img in img_list:
-                        image = Image.open(img)
-                        r_image = unet.detect_image(image)
-                        r_image.show()
+def get_u_predict_ls():
+    return result_ls
 
-                except:
-                    print('Open Error! Try again!')
-                    continue
+def get_u_total_count():
+    return total_count
+
+def stop_u_predict():
+    global stop
+    stop = True

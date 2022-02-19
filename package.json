@@ -1,6 +1,6 @@
 {
   "name": "green_recognization",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -10,11 +10,11 @@
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
-    "build-python": "pyinstaller -D -p ./flask_pack/venv/Lib/site-packages flask_pack/app.py --distpath ./pydist"
+    "build-python": "pyinstaller -D -p ./flask_pack/venv/Lib/site-packages flask_pack/app.py --add-data=flask_pack/model_data;model_data --distpath ./pydist"
   },
   "main": "background.js",
   "dependencies": {
-    "@element-plus/icons-vue": "^0.2.4",
+    "@element-plus/icons-vue": "^0.2.7",
     "axios": "^0.25.0",
     "core-js": "^3.6.5",
     "element-plus": "^1.2.0-beta.6",
