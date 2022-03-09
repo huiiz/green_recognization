@@ -1,5 +1,4 @@
 from PIL import Image
-from time import sleep
 from unet.unet import Unet
 import os
 # result_count = 0
@@ -21,12 +20,13 @@ def u_predict(path, img_path, num):
             if stop:
                 break
             image = Image.open(img)
-            r_image = unet.detect_image(image)
-            res_name = path+'/result_temp/'+img.split('\\')[-1]
+            r_image_single, r_image_combined = unet.detect_image(image)
+            res_name1 = path+'/result_temp/'+img.split('\\')[-1]
+            res_name2 = path+'/result_temp2/'+img.split('\\')[-1]
             result_ls.append(img.split('\\')[-1])
-            print(res_name)
             # result_count += 1
-            r_image.save(res_name)
+            r_image_combined.save(res_name1)
+            r_image_single.save(res_name2)
 
     except:
         print('Open Error! Try again!')

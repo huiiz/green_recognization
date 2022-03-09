@@ -1,9 +1,10 @@
 import shutil
 import os
-def clear_fold(path, fold):
+def clear_folds(path: str, folds: tuple):
     try:
-        shutil.rmtree(f'{path}/{fold}')
-        os.mkdir(f'{path}/{fold}')
+        for fold in folds:
+            shutil.rmtree(f'{path}/{fold}')
+            os.mkdir(f'{path}/{fold}')
         return True
     except:
         return False

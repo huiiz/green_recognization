@@ -4,13 +4,14 @@
     <div class="dot2"></div>
   </div>
   <h1>
-    生成动画中
+    {{content}}
     <div class="dots">{{ dots }}</div>
   </h1>
 </template>
 <script>
 export default {
   name: 'Loading2',
+  props: ['content'],
   data() {
     return {
       dots: '',

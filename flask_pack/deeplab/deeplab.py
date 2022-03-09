@@ -129,9 +129,9 @@ class DeeplabV3(object):
         #   将新图片和原图片混合
         #------------------------------------------------#
         if self.blend:
-            image = Image.blend(old_img,image,0.7)
+            image_res = Image.blend(old_img,image,0.7)
         
-        return image
+        return image, image_res
 
     def get_FPS(self, image, test_interval):
         #---------------------------------------------------------#

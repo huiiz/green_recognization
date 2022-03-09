@@ -1,19 +1,25 @@
+from http import server
 from time import sleep
 from flask import Flask, jsonify, request, make_response
 from flask_cors import cross_origin
 import threading
-from count_area import calculate_area
+# from gevent import monkey
+# from gevent.pywsgi import WSGIServer
+from calculate_rate import calculate_rate
 # from seg_tif import get_seg_count, get_seg_total
 # from change import seg_and_change, get_change_count
 from unet.predict import u_predict, get_u_predict_ls, get_u_total_count, stop_u_predict
 from deeplab.predict import d_predict, get_d_predict_ls, get_d_total_count, stop_d_predict
 from common import *
 from get_gif import create_gif
+
+# monkey.patch_all()
 app = Flask(__name__)
 
 path = ''
 img_path = ''
 net = '0'
+num = '1'
 
 
 @app.route('/')
@@ -34,7 +40,7 @@ def set_path():
     if not path:
         path = './pydist/app' if is_development == '1' else './resources/pydist/app'
         # make_folds(path, ('tif_file', 'tif_temp', 'png_temp', 'result_temp'))
-        make_folds(path, ('result_temp',))
+        make_folds(path, ('result_temp', 'result_temp2'))
 
         return jsonify({
             'code': 0,
@@ -124,11 +130,12 @@ def get_total():
 @app.route('/predict', methods=['GET'])
 def predict():
     # x_count, y_count, _ = get_seg_total()
+    global num
     num = request.args.get('num')
     try:
-        clear_fold(path, 'result_temp')
+        clear_folds(path, ('result_temp', 'result_temp2'))
     except:
-        pass
+        print('fail to clear the result fold')
     if net == '0':
         # u_predict(path)
         t = threading.Thread(target=u_predict, args=(path, img_path, num))
@@ -189,23 +196,25 @@ def get_gif():
 
 @app.route('/get_img', methods=['GET'])
 def get_img():
-    img_name = request.args.get('img_name')
+    img_name = request.args.get('img_name').split('?')[0]
     # return send_file(f'{path}/result_temp/{img_name}', mimetype='image/png')
     image_data = open(f'{path}/result_temp/{img_name}', "rb").read()
     response = make_response(image_data)
     response.headers['Content-Type'] = 'image/png'
     return response
 
-# 获得面积
-@app.route('/get_area', methods=['GET'])
-def get_area():
+# 获得绿化率
+@app.route('/get_rate', methods=['GET'])
+def get_rate():
     img_name = request.args.get('img_name')
-    area = calculate_area(path, img_name)
+    rate1, rate2, rate3 = calculate_rate(path, img_name, num)   # 红色，绿色，红色+绿色
     return jsonify({
         'code': 0,
         'msg': 'success to get area',
         'data': {
-            'area': area
+            'rate1': rate1,
+            'rate2': rate2, 
+            'rate3': rate3
         }
     })
 
@@ -216,7 +225,8 @@ def stop_predict():
     elif net == '1':
         stop_d_predict()
     sleep(3)
-    clear_fold(path, 'result_temp')
+    clear_folds(path, ('result_temp', 'result_temp2'))
+
 
     return 'ok'
 
@@ -224,11 +234,13 @@ def stop_predict():
 @app.route('/exit', methods=['GET'])
 def exit():
     # del_folds(path, ('tif_file', 'tif_temp', 'png_temp', 'result_temp'))
-    del_folds(path, ('result_temp',))
+    del_folds(path, ('result_temp', 'result_temp'))
 
     return 'ok'
 
 
 if __name__ == "__main__":
-    app.run(host='127.0.0.1', port=5001, use_reloader=False, debug=True)
+    # server = WSGIServer(('0.0.0.0', 5001), app)
+    # server.serve_forever()
+    app.run(host='127.0.0.1', port=5001, use_reloader=False, debug=True, threaded=True)
     # 注意，如果没有指定use_reloader=False，后续将其打包成exe后，运行exe会产生两个进程，在electron窗口关闭时kill掉进程时，会有一个守护进程无法kill掉

@@ -1,4 +1,3 @@
-from time import sleep
 from PIL import Image
 from deeplab.deeplab import DeeplabV3
 import os
@@ -19,11 +18,14 @@ def d_predict(path, img_path, num):
             if stop:
                 break
             image = Image.open(img)
-            r_image = deeplab.detect_image(image)
-            res_name = path+'/result_temp/'+img.split('\\')[-1]
+            # 返回①原始生成的图片与②生成图片与预测图片合并
+            r_image_single, r_image_combined  = deeplab.detect_image(image)
+            res_name1 = path+'/result_temp/'+img.split('\\')[-1]
+            res_name2 = path+'/result_temp2/'+img.split('\\')[-1]
             result_ls.append(img.split('\\')[-1])
             # print(res_name)
-            r_image.save(res_name)
+            r_image_combined.save(res_name1)
+            r_image_single.save(res_name2)
 
     except:
         print('Open Error! Try again!')
