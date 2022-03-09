@@ -1,6 +1,11 @@
+import time
 from PIL import Image
-import cv2
 
+rates = {}
+
+def clear_rates_data():
+    global rates
+    rates = {}
 
 def calculate_rate(path: str, img_name: str, num: str = '1') -> tuple:
     """
@@ -24,4 +29,12 @@ def calculate_rate(path: str, img_name: str, num: str = '1') -> tuple:
             elif num == '3' and pixel == (0, 128, 0):
                 count2 += 1
     
-    return round(count1 / (a * b) * 100, 2), round(count2 / (a * b) * 100, 2), round((count1 + count2) / (a * b) * 100, 2)
+    global rates
+    rates[img_name] = round(count1 / (a * b) * 100, 2), round(count2 / (a * b) * 100, 2), round((count1 + count2) / (a * b) * 100, 2)
+
+
+def getting_rate(img_name):
+    global rates
+    while not rates.get(img_name):
+        time.sleep(0.5)
+    return rates.get(img_name)

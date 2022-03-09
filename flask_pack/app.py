@@ -5,7 +5,7 @@ from flask_cors import cross_origin
 import threading
 # from gevent import monkey
 # from gevent.pywsgi import WSGIServer
-from calculate_rate import calculate_rate
+from calculate_rate import getting_rate
 # from seg_tif import get_seg_count, get_seg_total
 # from change import seg_and_change, get_change_count
 from unet.predict import u_predict, get_u_predict_ls, get_u_total_count, stop_u_predict
@@ -207,7 +207,8 @@ def get_img():
 @app.route('/get_rate', methods=['GET'])
 def get_rate():
     img_name = request.args.get('img_name')
-    rate1, rate2, rate3 = calculate_rate(path, img_name, num)   # 红色，绿色，红色+绿色
+    # rate1, rate2, rate3 = calculate_rate(path, img_name, num)   # 红色，绿色，红色+绿色
+    rate1, rate2, rate3 = getting_rate(img_name)   # 红色，绿色，红色+绿色
     return jsonify({
         'code': 0,
         'msg': 'success to get area',

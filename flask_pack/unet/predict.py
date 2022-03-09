@@ -1,12 +1,15 @@
 from PIL import Image
 from unet.unet import Unet
 import os
+from threading import Thread
+from calculate_rate import clear_rates_data, calculate_rate
 # result_count = 0
 total_count = 0
 result_ls = []
 stop = False
 
 def u_predict(path, img_path, num):
+    clear_rates_data()
     unet = Unet(path, num)
     try:
         # img_list = [f'{path}/png_temp/{i}_{j}.png' for i in range(x) for j in range(y)]
@@ -27,6 +30,8 @@ def u_predict(path, img_path, num):
             # result_count += 1
             r_image_combined.save(res_name1)
             r_image_single.save(res_name2)
+            t = Thread(target=calculate_rate, args=(path, img.split('\\')[-1], num))
+            t.start()
 
     except:
         print('Open Error! Try again!')

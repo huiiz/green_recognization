@@ -94,9 +94,7 @@
         <el-button type="info" @click="show_gif = !show_gif">{{
           show_gif ? '切换到图表' : '切换到动图'
         }}</el-button>
-        <el-image :src="gif_url()" fit="fit" v-show="show_gif">
-         
-        </el-image>
+        <el-image :src="gif_url()" fit="fit" v-show="show_gif"> </el-image>
         <div class="Echarts" v-show="!show_gif">
           <div
             id="main"
@@ -464,8 +462,18 @@ export default {
       var option = {
         xAxis: {
           type: 'category',
+          name: '时间',
           boundaryGap: false,
           data: x,
+          axisLabel: {
+            interval: 0,
+            rotate: 45, //倾斜度 -90 至 90 默认为0
+            margin: 2,
+            textStyle: {
+              fontWeight: 'bolder',
+              color: '#000000',
+            },
+          },
         },
         yAxis: {
           type: 'value',

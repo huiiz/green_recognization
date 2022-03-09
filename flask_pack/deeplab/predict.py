@@ -1,11 +1,14 @@
 from PIL import Image
 from deeplab.deeplab import DeeplabV3
 import os
+from threading import Thread
+from calculate_rate import clear_rates_data, calculate_rate
 total_count = 0
 result_ls = []
 stop = False
 
 def d_predict(path, img_path, num):
+    clear_rates_data()
     deeplab = DeeplabV3(path, num)
     try:
         # img_list = [f'{path}/png_temp/{i}_{j}.png' for i in range(x) for j in range(y)]
@@ -26,6 +29,8 @@ def d_predict(path, img_path, num):
             # print(res_name)
             r_image_combined.save(res_name1)
             r_image_single.save(res_name2)
+            t = Thread(target=calculate_rate, args=(path, img.split('\\')[-1], num))
+            t.start()
 
     except:
         print('Open Error! Try again!')
