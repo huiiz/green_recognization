@@ -1,4 +1,5 @@
 from http import server
+import os
 from time import sleep
 from flask import Flask, jsonify, request, make_response
 from flask_cors import cross_origin
@@ -238,7 +239,10 @@ def to_stop_predict():
 def exit():
     # del_folds(path, ('tif_file', 'tif_temp', 'png_temp', 'result_temp'))
     del_folds(path, ('result_temp', 'result_temp2', 'result_temp3'))
-
+    try:
+        os.remove(f'{path}/result.gif')
+    except:
+        pass
     return 'ok'
 
 
