@@ -1,6 +1,7 @@
 import time
 from PIL import Image
 
+
 rates = {}
 
 def clear_rates_data():
@@ -15,7 +16,18 @@ def calculate_rate(path: str, img_name: str, num: str = '1') -> tuple:
     为绿化
     """
     img_path = f'{path}/result_temp2/{img_name}'
-    image = Image.open(img_path)  # 图片的路径
+    while True:
+        try:
+            image = Image.open(img_path)  # 图片的路径
+            image.getpixel((0, 0))
+            print(f'{img_path}图像文件打开成功')
+
+        except:
+            print(f'{img_path}图像文件打开失败')
+            time.sleep(0.1)
+        else:
+            break
+
 
     a, b = image.size  # 获得图像的长、宽
     count1 = 0
@@ -37,4 +49,8 @@ def getting_rate(img_name):
     global rates
     while not rates.get(img_name):
         time.sleep(0.5)
+        print(f'{img_name}获取rate失败')
+        print(rates)
+
+
     return rates.get(img_name)

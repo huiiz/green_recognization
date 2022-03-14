@@ -94,7 +94,9 @@
         <el-button type="info" @click="show_gif = !show_gif">{{
           show_gif ? '切换到图表' : '切换到动图'
         }}</el-button>
-        <el-image :src="gif_url()" fit="fit" v-show="show_gif"> </el-image>
+        <el-image :src="gif_url()" fit="fit" v-show="show_gif" id="gif_img"
+          ><div class="image-slot"><loading-2 :content="'图像加载中'" /></div
+        ></el-image>
         <div class="Echarts" v-show="!show_gif">
           <div
             id="main"
@@ -584,5 +586,9 @@ export default {
 
 #main {
   margin: 0 auto;
+}
+
+#gif_img {
+  width: 70%;
 }
 </style>

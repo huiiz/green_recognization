@@ -8,9 +8,8 @@ import threading
 from calculate_rate import getting_rate
 # from seg_tif import get_seg_count, get_seg_total
 # from change import seg_and_change, get_change_count
-from unet.predict import u_predict, get_u_predict_ls, get_u_total_count, stop_u_predict
-from deeplab.predict import d_predict, get_d_predict_ls, get_d_total_count, stop_d_predict
-from common import *
+from predict import predict, get_predict_ls, get_total_count, stop_predict
+from utils import make_folds, clear_folds, del_folds
 from get_gif import create_gif
 
 # monkey.patch_all()
@@ -40,7 +39,7 @@ def set_path():
     if not path:
         path = './pydist/app' if is_development == '1' else './resources/pydist/app'
         # make_folds(path, ('tif_file', 'tif_temp', 'png_temp', 'result_temp'))
-        make_folds(path, ('result_temp', 'result_temp2'))
+        make_folds(path, ('result_temp', 'result_temp2', 'result_temp3'))
 
         return jsonify({
             'code': 0,
@@ -98,12 +97,13 @@ def set_img_path():
 @app.route('/get_total', methods=['GET'])
 def get_total():
     # x_count, y_count, seg_total = get_seg_total()
-    if net == '0':
-        total_count = get_u_total_count()
-    elif net == '1':
-        total_count = get_d_total_count()
-    else:
-        total_count = 0
+    # if net == '0':
+    #     total_count = get_u_total_count()
+    # elif net == '1':
+    #     total_count = get_d_total_count()
+    # else:
+    #     total_count = 0
+    total_count = get_total_count()
     return jsonify({
         'code': 0,
         'msg': 'success to get the total',
@@ -128,22 +128,24 @@ def get_total():
 
 
 @app.route('/predict', methods=['GET'])
-def predict():
+def to_predict():
     # x_count, y_count, _ = get_seg_total()
     global num
     num = request.args.get('num')
     try:
-        clear_folds(path, ('result_temp', 'result_temp2'))
+        clear_folds(path, ('result_temp', 'result_temp2', 'result_temp3'))
     except:
         print('fail to clear the result fold')
-    if net == '0':
-        # u_predict(path)
-        t = threading.Thread(target=u_predict, args=(path, img_path, num))
-        t.start()
-    elif net == '1':
-        # d_predict(path, x_count, y_count)
-        t = threading.Thread(target=d_predict, args=(path, img_path, num))
-        t.start()
+    # if net == '0':
+    #     # u_predict(path)
+    #     t = threading.Thread(target=u_predict, args=(path, img_path, num))
+    #     t.start()
+    # elif net == '1':
+    #     # d_predict(path, x_count, y_count)
+    #     t = threading.Thread(target=d_predict, args=(path, img_path, num))
+    #     t.start()
+    t = threading.Thread(target=predict, args=(path, img_path, num, net))
+    t.start()
     return jsonify({
         'code': 0,
         'msg': 'begin to predict'
@@ -152,15 +154,14 @@ def predict():
 # 获得预测进度
 @app.route('/pre_process', methods=['GET'])
 def pre_process():
-    if net == '0':
-        predict_ls = get_u_predict_ls()
-        total_count = get_u_total_count()
-    elif net == '1':
-        predict_ls = get_d_predict_ls()
-        total_count = get_d_total_count()
-    else:
-        predict_ls = []
-        total_count = 0
+    # if net == '0':
+    #     predict_ls = get_u_predict_ls()
+    #     total_count = get_u_total_count()
+    # elif net == '1':
+    #     predict_ls = get_d_predict_ls()
+    #     total_count = get_d_total_count()
+    predict_ls = get_predict_ls()
+    total_count = get_total_count()
     return jsonify({
         'code': 0,
         'msg': 'success to get the count',
@@ -198,7 +199,7 @@ def get_gif():
 def get_img():
     img_name = request.args.get('img_name').split('?')[0]
     # return send_file(f'{path}/result_temp/{img_name}', mimetype='image/png')
-    image_data = open(f'{path}/result_temp/{img_name}', "rb").read()
+    image_data = open(f'{path}/result_temp3/{img_name}', "rb").read()
     response = make_response(image_data)
     response.headers['Content-Type'] = 'image/png'
     return response
@@ -220,13 +221,14 @@ def get_rate():
     })
 
 @app.route('/stop_predict', methods=['GET'])
-def stop_predict():
-    if net == '0':
-        stop_u_predict()
-    elif net == '1':
-        stop_d_predict()
+def to_stop_predict():
+    # if net == '0':
+    #     stop_u_predict()
+    # elif net == '1':
+    #     stop_d_predict()
+    stop_predict()
     sleep(3)
-    clear_folds(path, ('result_temp', 'result_temp2'))
+    clear_folds(path, ('result_temp', 'result_temp2', 'result_temp3'))
 
 
     return 'ok'
@@ -235,7 +237,7 @@ def stop_predict():
 @app.route('/exit', methods=['GET'])
 def exit():
     # del_folds(path, ('tif_file', 'tif_temp', 'png_temp', 'result_temp'))
-    del_folds(path, ('result_temp', 'result_temp'))
+    del_folds(path, ('result_temp', 'result_temp2', 'result_temp3'))
 
     return 'ok'
 
