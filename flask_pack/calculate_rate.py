@@ -15,6 +15,7 @@ def calculate_rate(path: str, img_name: str, num: str = '1') -> tuple:
     num='3'时，(0, 128, 0)
     为绿化
     """
+    img_name = ''.join(img_name.split('.')[:-1])+'.png'
     img_path = f'{path}/result_temp2/{img_name}'
     while True:
         try:
@@ -45,8 +46,9 @@ def calculate_rate(path: str, img_name: str, num: str = '1') -> tuple:
     rates[img_name] = round(count1 / (a * b) * 100, 2), round(count2 / (a * b) * 100, 2), round((count1 + count2) / (a * b) * 100, 2)
 
 
-def getting_rate(img_name):
+def getting_rate(img_name: str):
     global rates
+    img_name = ''.join(img_name.split('.')[:-1])+'.png'
     while not rates.get(img_name):
         time.sleep(0.5)
         print(f'{img_name}获取rate失败')

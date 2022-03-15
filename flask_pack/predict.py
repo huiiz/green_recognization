@@ -28,7 +28,7 @@ def predict(path, img_path, num, input_net='0'):
             # 返回①原始生成的图片与②生成图片与预测图片合并
             r_image_single, r_image_combined = net.detect_image(image)
             res_name1 = path+'/result_temp/'+img.split('\\')[-1]
-            res_name2 = path+'/result_temp2/'+img.split('\\')[-1]
+            res_name2 = path+'/result_temp2/'+''.join(img.split('\\')[-1].split('.')[:-1])+'.png'
             res_name3 = path+'/result_temp3/'+img.split('\\')[-1]
             result_ls.append(img.split('\\')[-1])
             # print(res_name)
