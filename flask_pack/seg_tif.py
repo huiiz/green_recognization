@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# 废弃
 import os
 from osgeo import gdal
 from common import clear_fold

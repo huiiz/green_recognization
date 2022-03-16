@@ -1,3 +1,4 @@
+# 废弃
 import os
 from osgeo import gdal
 from seg_tif import seg

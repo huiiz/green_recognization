@@ -176,6 +176,11 @@ def pre_process():
 @app.route('/create_gif', methods=['GET'])
 def to_create_gif():
     # img_path = request.args.get('img_path')
+    create_gif(path, gif_name='result.gif', duration=1)
+    return jsonify({
+        'code': 0,
+        'msg': 'success to create gif'
+    })
     try:
         create_gif(path, gif_name='result.gif', duration=1)
         return jsonify({
