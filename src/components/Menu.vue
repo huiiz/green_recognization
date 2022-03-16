@@ -4,7 +4,7 @@
       <el-header>
           <el-button type="success" plain @click="jumpTo('/select')">绿化提取</el-button><a class="space"></a>
           <el-button type="info" plain @click="jumpTo('/predict')">动态预测</el-button><a class="space"></a>
-          <el-button type="warning" plain @click="jumpTo('/select2')">多一点绿</el-button>
+          <el-button type="warning" plain @click="jumpTo('/select2')">绿化规划</el-button>
       </el-header>
     </el-container>
   </div>
