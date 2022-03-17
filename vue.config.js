@@ -28,10 +28,19 @@ module.exports = {
                 asar: false,
                 extraResources: [
                     './pydist/**'
-                ]
-
+                ],
+                artifactName: '${productName}_Setup_${version}_${platform}.${ext}',
+                productName: '绿化先锋——基于深度学习的绿化信息提取与绿化率提升系统',
+                nsis: {
+                    // include: 'installer.nsh',
+                    oneClick: false,
+                    allowToChangeInstallationDirectory: true,
+                    perMachine: true,
+                    // 允许请求提升。 如果为false，则用户必须使用提升的权限重新启动安装程序。
+                    allowElevation: true,
+                    shortcutName: '${productName}',
+                },
             },
-            productName: '名称',
         },
     },
 };
