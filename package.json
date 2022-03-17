@@ -1,6 +1,6 @@
 {
   "name": "green_recognization",
-  "version": "1.0.0_beta",
+  "version": "1.0.0beta",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
