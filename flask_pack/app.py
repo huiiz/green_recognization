@@ -1,4 +1,3 @@
-from http import server
 import os
 from time import sleep
 from flask import Flask, jsonify, request, make_response
@@ -176,11 +175,11 @@ def pre_process():
 @app.route('/create_gif', methods=['GET'])
 def to_create_gif():
     # img_path = request.args.get('img_path')
-    create_gif(path, gif_name='result.gif', duration=1)
-    return jsonify({
-        'code': 0,
-        'msg': 'success to create gif'
-    })
+    # create_gif(path, gif_name='result.gif', duration=1)
+    # return jsonify({
+    #     'code': 0,
+    #     'msg': 'success to create gif'
+    # })
     try:
         create_gif(path, gif_name='result.gif', duration=1)
         return jsonify({
@@ -201,9 +200,10 @@ def get_gif():
     return response
 
 
-@app.route('/get_img', methods=['GET'])
-def get_img():
-    img_name = request.args.get('img_name').split('?')[0]
+@app.route('/get_img/<img_name>', methods=['GET'])
+def get_img(img_name):
+    img_name = img_name.split('?')[0]
+    # img_name = request.args.get('img_name').split('?')[0]
     # return send_file(f'{path}/result_temp/{img_name}', mimetype='image/png')
     image_data = open(f'{path}/result_temp3/{img_name}', "rb").read()
     response = make_response(image_data)

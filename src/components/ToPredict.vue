@@ -54,7 +54,7 @@
     <div id="choose" v-if="set_show(1)">
       <el-radio-group v-model="net_choose" size="large">
         <el-radio-button label="Unet" v-if="from != 1"></el-radio-button>
-        <el-radio-button label="DeeplabV3++"></el-radio-button>
+        <el-radio-button label="DeeplabV3+"></el-radio-button>
       </el-radio-group>
     </div>
     <!-- 页面三：处理中 -->
@@ -150,7 +150,7 @@ export default {
       active: 0,
       // active1: 0,
       show: '10000000', // 选择待处理文件、选择网络、处理中、处理结果、下一步、上一步、查看结果、gif生成中
-      net_choose: this.from != 1 ? 'Unet' : 'DeeplabV3++',
+      net_choose: this.from != 1 ? 'Unet' : 'DeeplabV3+',
       process_status: '处理中',
       process_step: '提取绿化中',
       perc: 0,
@@ -246,9 +246,7 @@ export default {
         this.imgNameAndRandom[img_name] = this.getRandom();
       }
       return (
-        'http://localhost:5001/get_img?img_name=' +
-        img_name +
-        '?random=' +
+        'http://localhost:5001/get_img/' + img_name + '?random=' +
         this.imgNameAndRandom[img_name]
       );
     },
@@ -422,7 +420,7 @@ export default {
             }
           }
         });
-      }, 5000);
+      }, 2500);
     },
     // get_img_list() {
     //   let n = 0;
